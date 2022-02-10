@@ -62,12 +62,12 @@ app.use(function (req, res, next) {
 //** END OF MIDDLEWARE */
 
 //routes
-app.use('/users', userRoute);
-app.use('/payment', paymentRoute);
-app.use('/wallet', walletRoute);
-app.use('/admin', adminRoute);
+app.use('/v1/users', userRoute);
+app.use('/v1/payment', paymentRoute);
+app.use('/v1/wallet', walletRoute);
+app.use('/v1/admin', adminRoute);
 
 
-app.listen('8080', () => {
-    console.log('Server is listening on port 8080')
+app.listen('9090', () => {
+    console.log('Server is listening on port 9090')
 })
