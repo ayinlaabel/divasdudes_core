@@ -71,6 +71,6 @@ app.use('/v1/wallet', walletRoute);
 app.use('/v1/admin', adminRoute);
 
 
-app.listen('9090', () => {
+app.listen(9090, () => {
     console.log('Server is listening on port 9090')
 })
