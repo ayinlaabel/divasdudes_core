@@ -2,10 +2,13 @@
 
 const mongoose = require('mongoose');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 mongoose.Promise = global.Promise;
 
 //connect to database
-mongoose.connect('mongodb://localhost:27017/divasdudes', { useNewUrlParser: true }).then(
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true }).then(
     () =>  console.log('conneted to mongodb successfully...')
 ). catch(
     err => console.log(err)

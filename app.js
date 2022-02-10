@@ -13,6 +13,9 @@ const { User } = require('./database/models');
 const auth = require('./controllers/auth.controller');
 const req = require('express/lib/request');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 const app = express();
 
 
