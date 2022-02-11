@@ -19,47 +19,49 @@ const userController = {
             email => {
                 if(email) {
                     res.status(400).send('This email is already registered.')
+                }else{
+                    newUser.save().then(
+                        (user) => {
+                            const userId = user.id
+                            let wallet = new Wallet();
+                            wallet.userId = userId;
+                            wallet.save()
+                            return newUser.createSession()
+                        }
+                    ).then(
+                        (refreshToken) => {
+                            //Session created successfully - refreshToken returned.
+                            //now we generate an access auth token for the user.
+            
+                            return newUser.generateAccessAuthToken().then(
+                                (accessToken) => {
+                                    //access auth token generated successfully, now we return an object containing  the auth token
+                                    return { accessToken, refreshToken }
+                                }
+                            ).then(
+                                (authToken) => {
+                                    //Now we construct and send  the response to the user with their auth tokens in the headerand the user object in the body
+            
+                                    res
+                                        .header('x-refresh-token', authToken.refreshToken)
+                                        .header('x-access-token', authToken.accessToken)
+                                        .send(newUser);
+                                }
+                            ).catch(
+                                (err) => {
+                                    res.status(400).send("ERROR: err")
+                                }
+                            );
+                        }
+                    )
                 }
             }
         ).catch(
             err => {
-                console.log(err)
+                console.log("error")
             }
         )
-        newUser.save().then(
-            (user) => {
-                const userId = user.id
-                let wallet = new Wallet();
-                wallet.userId = userId;
-                wallet.save()
-                return newUser.createSession()
-            }
-        ).then(
-            (refreshToken) => {
-                //Session created successfully - refreshToken returned.
-                //now we generate an access auth token for the user.
-
-                return newUser.generateAccessAuthToken().then(
-                    (accessToken) => {
-                        //access auth token generated successfully, now we return an object containing  the auth token
-                        return { accessToken, refreshToken }
-                    }
-                ).then(
-                    (authToken) => {
-                        //Now we construct and send  the response to the user with their auth tokens in the headerand the user object in the body
-
-                        res
-                            .header('x-refresh-token', authToken.refreshToken)
-                            .header('x-access-token', authToken.accessToken)
-                            .send(newUser);
-                    }
-                ).catch(
-                    (err) => {
-                        res.status(400).send("ERROR: err")
-                    }
-                );
-            }
-        )
+        
     },
 
 
