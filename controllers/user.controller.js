@@ -15,6 +15,17 @@ const userController = {
 
         let body = req.body;
         let newUser = new User(body);
+        User.findOne({email: body.email}).then(
+            email => {
+                if(email) {
+                    res.status(400).send('This email is already registered.')
+                }
+            }
+        ).catch(
+            err => {
+                console.log(err)
+            }
+        )
         newUser.save().then(
             (user) => {
                 const userId = user.id
