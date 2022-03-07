@@ -71,16 +71,16 @@ const userController = {
         if (!user) {
           res.status(400).send("Invalid Credentials");
         } else {
-          res.json({ status: "SUCCESS", user });
-          Wallet.findOne({ userId: user.id })
+            Wallet.findOne({ userId: user.id })
             .then((wallet, err) => {
-              if (!wallet) {
-                let newWallet = new Wallet();
-
-                newWallet.userId = user.id;
-
-                newWallet.save();
-              }
+                if (!wallet) {
+                    let newWallet = new Wallet();
+                    
+                    newWallet.userId = user.id;
+                    
+                    newWallet.save();
+                }
+                res.json({ status: "SUCCESS", user });
             })
             .catch((err) => console.log(err));
 
