@@ -11,7 +11,6 @@ const paymentController = (request) => {
         // console.log(form);
             const options = {
                 url: 'https://api.paystack.co/transaction/initialize',
-
                 headers: {
                     Authorization: mySecretKey,
                     'Content-Type': 'application/json',
@@ -44,6 +43,10 @@ const paymentController = (request) => {
             }
             request(options, callback);
         }
+
+    const verifyPaymentUpdate = (reference) => {
+
+    }
 
     return {initializeTransaction, verifyTransaction}
 }

@@ -147,7 +147,7 @@ userSchema.statics.findByCredentials = function (email, password) {
     return user.findOne({ email }).then(
         (user) => {
             if (!user){ 
-                return Promise.reject('No user found!')
+                return Promise.reject({status:'FAILED', error:'No user found!'})
             };
 
 

@@ -15,11 +15,11 @@ const userController = {
 
         let body = req.body;
         let newUser = new User(body);
-        User.findOne({email: body.email}).then(
+        User.findOne({ email: body.email }).then(
             email => {
-                if(email) {
+                if (email) {
                     res.status(400).send('This email is already registered.')
-                }else{
+                } else {
                     newUser.save().then(
                         (user) => {
                             const userId = user.id
@@ -32,7 +32,7 @@ const userController = {
                         (refreshToken) => {
                             //Session created successfully - refreshToken returned.
                             //now we generate an access auth token for the user.
-            
+
                             return newUser.generateAccessAuthToken().then(
                                 (accessToken) => {
                                     //access auth token generated successfully, now we return an object containing  the auth token
@@ -41,7 +41,7 @@ const userController = {
                             ).then(
                                 (authToken) => {
                                     //Now we construct and send  the response to the user with their auth tokens in the headerand the user object in the body
-            
+
                                     res
                                         .header('x-refresh-token', authToken.refreshToken)
                                         .header('x-access-token', authToken.accessToken)
@@ -61,7 +61,7 @@ const userController = {
                 console.log("error")
             }
         )
-        
+
     },
 
 
@@ -75,8 +75,8 @@ const userController = {
                 if (!user) {
                     res.status(400).send("Invalid Credentials")
                 } else {
-                    Wallet.findOne({userId: user.id}).then(
-                        (wallet, err) =>{
+                    Wallet.findOne({ userId: user.id }).then(
+                        (wallet, err) => {
                             if (!wallet) {
                                 let newWallet = new Wallet();
 
@@ -167,14 +167,14 @@ const userController = {
         if (form.paymentType === 'wallet') {
             tType = 'deposit';
             description = 'You just deposit into your wallet'
-             img = 'https://res.cloudinary.com/kraneabel/image/upload/v1643365493/divasdudes/hand-taking-out-money-wallet-vector-hand-taking-out-money-wallet-vector-illustration-198843248_lg2j0o.jpg'
+            img = 'https://res.cloudinary.com/kraneabel/image/upload/v1643365493/divasdudes/hand-taking-out-money-wallet-vector-hand-taking-out-money-wallet-vector-illustration-198843248_lg2j0o.jpg'
 
         }
 
         if (form.paymentType === 'savings') {
             tType = 'savings';
-             description = 'You just pay for your thrift'
-              img = 'https://res.cloudinary.com/kraneabel/image/upload/v1643365493/divasdudes/illustration-character-saving-money-safe_53876-37248_sir3kb.jpg'
+            description = 'You just pay for your thrift'
+            img = 'https://res.cloudinary.com/kraneabel/image/upload/v1643365493/divasdudes/illustration-character-saving-money-safe_53876-37248_sir3kb.jpg'
         }
 
 
@@ -198,7 +198,7 @@ const userController = {
                 date: Date.now(),
                 transactionType: tType,
                 description: description,
-                status: 'Pending',
+                status: 'pending',
                 image: img,
                 email: form.email,
                 url: url.authorization_url,
@@ -206,6 +206,17 @@ const userController = {
             }
 
             const transaction = new Transaction(newTransaction)
+            let wallet = Wallet.findOne({ userId: req.user_id }).then(
+                wallet =>{
+                    console.log(wallet)
+                }
+            )
+            if (!wallet || wallet.length < 1) {
+                console.log("No wallet")
+                let wallet = new Wallet();
+                wallet.userId = req.user_id;
+                wallet.save();
+            }
 
             transaction.save().then(
                 () => {
@@ -221,72 +232,60 @@ const userController = {
             res.status(200).send(url)
             // console.log(data.data)
         })
-    },
-
-    async getPayment(req, res, next) {
-
-        const take = req.params;
-        const ref = take.ref;
-        // console.log(ref);
-        verifyTransaction(ref, async (err, body) => {
-            // if (err) {
-            //     //handle errors appropriately
-            //     console.log(err)
-            //     // return res.redirect('/error');
-            // }
-            let vp = JSON.parse(body);
-            const data = _.at(vp.data, ['reference', 'amount', 'customer.email']);
-
-            [reference, amount, email] = data;
-
-            // console.log(vp)
-            // let getAmount = amount;
-
-            // let query = { status: vp.data.status };
-
-            // transaction.update(query);
-            // console.log(transaction)
-
-
-            Wallet.findOne({ userId: req.user_id }).then(
-                (wallet) => {
-
-                    wallet.balance = wallet.balance + (amount / 100);
-
-                    wallet.save();
-
-                }
-            )
-
-            Transaction.findOne({ reference: vp.data.reference }).then(
-                (transaction)=>{
-                    transaction.status = vp.data.status;
-                    transaction.save();
-
-                }
-            )
-
-
-
-            // console.log(newTransaction)
-        })
-    },
+    },        
 
     getRef(req, res, next) {
 
         const ref = req.body.rrr;
         // console.log(ref, req.body)
-        res.redirect('/payment/verify/' + ref)
-    },
 
-    getDueDate(req, res, next) {
-        PaymentDue.findOne().then(
-            (date) => {
-                // console.log(date)
-                res.status(200).send(date)
+        verifyTransaction(ref, async (err, body) => {
+
+            let vp = JSON.parse(body);
+            console.log(vp);
+            const data = _.at(vp.data, ['reference', 'amount', 'customer.email']);
+
+            [reference, amount, email] = data;
+
+            Wallet.findOne({ userId: req.user_id }).then(
+                wallet => {
+                    console.log(amount)
+                    console.log(wallet);
+                    console.log('Has Wallet')
+                    wallet.balance = wallet.balance + (amount / 100);
+                    
+                    wallet.save().then(
+                        wallet => console.log(wallet)
+                    );
+                }
+            ).catch(
+                err =>{
+                    res.status(400).send("Something went wrong!")
+                }
+            )
+
+            Transaction.findOne({ reference: vp.data.reference }).then(
+            (transaction) => {
+                transaction.status = vp.data.status;
+                transaction.save();
+
             }
         )
-    }
+
+
+
+    // console.log(newTransaction)
+})
+    },
+
+getDueDate(req, res, next) {
+    PaymentDue.findOne().then(
+        (date) => {
+            // console.log(date)
+            res.status(200).send(date)
+        }
+    )
+}
 }
 
 module.exports = userController

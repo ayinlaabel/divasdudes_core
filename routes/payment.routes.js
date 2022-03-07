@@ -9,6 +9,5 @@ const paymentCtrl = require('../controllers/payment.controller');
 
 router.post('/', authCtrl.authenticate, userCtrl.payment)
 router.post('/ref', userCtrl.getRef)
-router.get('/verify/:ref', authCtrl.authenticate, userCtrl.getPayment)
 
 module.exports = router;
