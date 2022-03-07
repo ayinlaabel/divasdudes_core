@@ -105,7 +105,8 @@ const userController = {
                     .send(user);
                 })
                 .catch((err) => {
-                  res.status(400).json(err);
+                  //   res.status(400).json(err);
+                  console.log(err);
                 });
             })
             .catch((err) => console.log(err));
