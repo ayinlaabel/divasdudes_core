@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const res = require('express/lib/response');
+const { json } = require('body-parser');
 
 //JWT secret
 const jwtSecret = 'MySecret_Divasdudes'
@@ -153,7 +154,7 @@ userSchema.statics.findByCredentials = function (email, password) {
 
             return new Promise((resolve, reject) => {
                 bcrypt.compare(password, user.password, (err, res) => {
-                    if (res) res.JSON({status:'SUCCESS', user:res});
+                    if (res) json({status:'SUCCESS', user:res});
                     else {
                         reject({ status:'FAILED', error:'Wrong password' });
                     }
