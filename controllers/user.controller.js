@@ -80,7 +80,7 @@ const userController = {
 
                 newWallet.save();
               }
-            //   res.status(200).json({ status: "SUCCESS", user });
+              res.status(200).json({ status: "SUCCESS", user });
             })
             .catch((err) => console.log(err));
 
@@ -97,12 +97,12 @@ const userController = {
                   return { accessToken, refreshToken };
                 })
                 .then((authToken) => {
-                  //Now we construct and send  the response to the user with their auth tokens in the headerand the user object in the body
+                  //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
 
-                //   res
-                //     .header("x-refresh-token", authToken.refreshToken)
-                //     .header("x-access-token", authToken.accessToken)
-                //     .send(user);
+                  res
+                    .header("x-refresh-token", authToken.refreshToken)
+                    .header("x-access-token", authToken.accessToken)
+                    .send(user);
                 })
                 .catch((err) => {
                   //   res.status(400).json(err);
