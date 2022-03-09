@@ -22,7 +22,7 @@ const userController = {
     User.findOne({ email: body.email })
       .then((email) => {
         if (email) {
-          res.status(400).send("This email is already registered.");
+          res.status(400).send({status:'FAILED', error:"This email is already registered."});
         } else {
           newUser
             .save()
@@ -52,7 +52,7 @@ const userController = {
                     .send(newUser);
                 })
                 .catch((err) => {
-                  res.status(400).send("ERROR: err");
+                  res.status(400).send({status:"FAILED", error:"ERROR: err"});
                 });
             });
         }
