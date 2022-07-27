@@ -85,19 +85,20 @@ const userController = {
                 status: "FAILED",
                 error: "Wrong Password, try agian!",
               });
+            } else {
+              Wallet.findOne({ userId: user.id })
+                .then((wallet, err) => {
+                  if (!wallet) {
+                    let newWallet = new Wallet();
+
+                    newWallet.userId = user.id;
+
+                    newWallet.save();
+                  }
+                  res.status(200).json({ status: "SUCCESS", user });
+                })
+                .catch((err) => console.log(err));
             }
-            Wallet.findOne({ userId: user.id })
-              .then((wallet, err) => {
-                if (!wallet) {
-                  let newWallet = new Wallet();
-
-                  newWallet.userId = user.id;
-
-                  newWallet.save();
-                }
-                res.status(200).json({ status: "SUCCESS", user });
-              })
-              .catch((err) => console.log(err));
           });
         }
 
