@@ -79,7 +79,6 @@ const userController = {
           res.status(400).send({ status: "FAILED", error: "No user found!" });
         } else {
           bcrypt.compare(password, user.password, function (err, isMatch) {
-            console.log(user);
             if (!isMatch) {
               res.status(400).send({
                 status: "FAILED",
