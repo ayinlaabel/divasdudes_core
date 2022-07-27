@@ -119,7 +119,7 @@ const userController = {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log({ err, me: "me" });
         res.status(400).send({ err });
       });
   },
