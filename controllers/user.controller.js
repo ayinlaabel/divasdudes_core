@@ -10,6 +10,7 @@ const {
   Transaction,
   PaymentDue,
 } = require("../database/models/index");
+
 const { initializeTransaction, verifyTransaction } =
   require("./payment.controller")(request);
 
@@ -22,7 +23,10 @@ const userController = {
     User.findOne({ email: body.email })
       .then((email) => {
         if (email) {
-          res.status(400).send({status:'FAILED', error:"This email is already registered."});
+          res.status(400).send({
+            status: "FAILED",
+            error: "This email is already registered.",
+          });
         } else {
           newUser
             .save()
@@ -52,7 +56,9 @@ const userController = {
                     .send(newUser);
                 })
                 .catch((err) => {
-                  res.status(400).send({status:"FAILED", error:"ERROR: err"});
+                  res
+                    .status(400)
+                    .send({ status: "FAILED", error: "ERROR: err" });
                 });
             });
         }
@@ -69,7 +75,7 @@ const userController = {
     User.findByCredentials(email, password)
       .then((user, err) => {
         if (!user) {
-          res.status(400).send("Invalid Credentials");
+          res.status(400).send({ err: "Invalid Credentials" });
         } else {
           Wallet.findOne({ userId: user.id })
             .then((wallet, err) => {
@@ -82,34 +88,34 @@ const userController = {
               }
               res.status(200).json({ status: "SUCCESS", user });
             })
-            .catch((err) => console.log(err));
+            .catch((err) => res.status(400).send(err));
 
-        //   return user
-        //     .createSession()
-        //     .then((refreshToken) => {
-        //       //Session created successfully - refreshToken returned.
-        //       //now we generate an access auth token for the user.
+          //   return user
+          //     .createSession()
+          //     .then((refreshToken) => {
+          //       //Session created successfully - refreshToken returned.
+          //       //now we generate an access auth token for the user.
 
-        //       return user
-        //         .generateAccessAuthToken()
-        //         .then((accessToken) => {
-        //           //access auth token generated successfully, now we return an object containing  the auth token
-        //           return { accessToken, refreshToken };
-        //         })
-        //         .then((authToken) => {
-        //           //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
+          //       return user
+          //         .generateAccessAuthToken()
+          //         .then((accessToken) => {
+          //           //access auth token generated successfully, now we return an object containing  the auth token
+          //           return { accessToken, refreshToken };
+          //         })
+          //         .then((authToken) => {
+          //           //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
 
-        //           res
-        //             .header("x-refresh-token", authToken.refreshToken)
-        //             .header("x-access-token", authToken.accessToken)
-        //             .send(user);
-        //         })
-        //         .catch((err) => {
-        //           //   res.status(400).json(err);
-        //           console.log(err);
-        //         });
-        //     })
-        //     .catch((err) => console.log(err));
+          //           res
+          //             .header("x-refresh-token", authToken.refreshToken)
+          //             .header("x-access-token", authToken.accessToken)
+          //             .send(user);
+          //         })
+          //         .catch((err) => {
+          //           //   res.status(400).json(err);
+          //           console.log(err);
+          //         });
+          //     })
+          //     .catch((err) => console.log(err));
         }
       })
       .catch((err) => {
