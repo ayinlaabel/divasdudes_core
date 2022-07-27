@@ -72,11 +72,18 @@ const userController = {
     let email = req.body.email;
     let password = req.body.password;
 
-    User.findByCredentials(email, password)
-      .then((user, err) => {
-        if (user.status === "FAILED") {
-          res.send({ err: user });
-        } else {
+    User.findOne(email, password)
+      .then((user) => {
+        if (!user) {
+          res.status(400).send({ status: "FAILED", error: "No user found!" });
+        }
+
+        bcrypt.compare(password, user.password, (err, user) => {
+          if (err) {
+            res
+              .status(400)
+              .send({ status: "FAILED", error: "Wrong Password, try agian!" });
+          }
           Wallet.findOne({ userId: user.id })
             .then((wallet, err) => {
               if (!wallet) {
@@ -89,34 +96,48 @@ const userController = {
               res.status(200).json({ status: "SUCCESS", user });
             })
             .catch((err) => res.send(err));
+        });
+        // else {
+        //   Wallet.findOne({ userId: user.id })
+        //     .then((wallet, err) => {
+        //       if (!wallet) {
+        //         let newWallet = new Wallet();
 
-          //   return user
-          //     .createSession()
-          //     .then((refreshToken) => {
-          //       //Session created successfully - refreshToken returned.
-          //       //now we generate an access auth token for the user.
+        //         newWallet.userId = user.id;
 
-          //       return user
-          //         .generateAccessAuthToken()
-          //         .then((accessToken) => {
-          //           //access auth token generated successfully, now we return an object containing  the auth token
-          //           return { accessToken, refreshToken };
-          //         })
-          //         .then((authToken) => {
-          //           //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
+        //         newWallet.save();
+        //       }
+        //       res.status(200).json({ status: "SUCCESS", user });
+        //     })
+        //     .catch((err) => res.send(err));
 
-          //           res
-          //             .header("x-refresh-token", authToken.refreshToken)
-          //             .header("x-access-token", authToken.accessToken)
-          //             .send(user);
-          //         })
-          //         .catch((err) => {
-          //           //   res.status(400).json(err);
-          //           console.log(err);
-          //         });
-          //     })
-          //     .catch((err) => console.log(err));
-        }
+        //   //   return user
+        //   //     .createSession()
+        //   //     .then((refreshToken) => {
+        //   //       //Session created successfully - refreshToken returned.
+        //   //       //now we generate an access auth token for the user.
+
+        //   //       return user
+        //   //         .generateAccessAuthToken()
+        //   //         .then((accessToken) => {
+        //   //           //access auth token generated successfully, now we return an object containing  the auth token
+        //   //           return { accessToken, refreshToken };
+        //   //         })
+        //   //         .then((authToken) => {
+        //   //           //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
+
+        //   //           res
+        //   //             .header("x-refresh-token", authToken.refreshToken)
+        //   //             .header("x-access-token", authToken.accessToken)
+        //   //             .send(user);
+        //   //         })
+        //   //         .catch((err) => {
+        //   //           //   res.status(400).json(err);
+        //   //           console.log(err);
+        //   //         });
+        //   //     })
+        //   //     .catch((err) => console.log(err));
+        // }
       })
       .catch((err) => {
         console.log({ err, me: "me" });
