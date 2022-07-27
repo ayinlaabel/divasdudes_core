@@ -77,27 +77,30 @@ const userController = {
       .then((user) => {
         if (!user) {
           res.status(400).send({ status: "FAILED", error: "No user found!" });
+        } else {
+          bcrypt.compare(password, user.password, function (err, isMatch) {
+            console.log(user);
+            if (!isMatch) {
+              res.status(400).send({
+                status: "FAILED",
+                error: "Wrong Password, try agian!",
+              });
+            }
+            Wallet.findOne({ userId: user.id })
+              .then((wallet, err) => {
+                if (!wallet) {
+                  let newWallet = new Wallet();
+
+                  newWallet.userId = user.id;
+
+                  newWallet.save();
+                }
+                res.status(200).json({ status: "SUCCESS", user });
+              })
+              .catch((err) => console.log(err));
+          });
         }
 
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-          if (!isMatch) {
-            res
-              .status(400)
-              .send({ status: "FAILED", error: "Wrong Password, try agian!" });
-          }
-          Wallet.findOne({ userId: user.id })
-            .then((wallet, err) => {
-              if (!wallet) {
-                let newWallet = new Wallet();
-
-                newWallet.userId = user.id;
-
-                newWallet.save();
-              }
-              res.status(200).json({ status: "SUCCESS", user });
-            })
-            .catch((err) => res.send(err));
-        });
         // else {
         //   Wallet.findOne({ userId: user.id })
         //     .then((wallet, err) => {
@@ -141,8 +144,7 @@ const userController = {
         // }
       })
       .catch((err) => {
-        console.log({ err, me: "me" });
-        res.status(400).send({ err });
+        console.log({ err });
       });
   },
 
