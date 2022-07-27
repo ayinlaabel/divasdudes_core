@@ -76,16 +76,11 @@ const userController = {
     User.findOne({ email })
       .then((user) => {
         if (!user) {
-          console.log({ status: "FAILED", error: "No user found!" });
-          res.status(400).send({ status: "FAILED", error: "No user found!" });
+          res.send({ status: "FAILED", error: "No user found!" });
         } else {
           bcrypt.compare(password, user.password, function (err, isMatch) {
             if (!isMatch) {
-              console.log({
-                status: "FAILED",
-                error: "Wrong Password, try agian!",
-              });
-              res.status(400).send({
+              res.send({
                 status: "FAILED",
                 error: "Wrong Password, try agian!",
               });
