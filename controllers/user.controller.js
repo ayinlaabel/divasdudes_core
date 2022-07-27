@@ -88,7 +88,7 @@ const userController = {
               }
               res.status(200).json({ status: "SUCCESS", user });
             })
-            .catch((err) => res.status(400).send(err));
+            .catch((err) => res.send(err));
 
           //   return user
           //     .createSession()
