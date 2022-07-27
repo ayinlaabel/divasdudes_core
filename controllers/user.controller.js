@@ -72,7 +72,7 @@ const userController = {
     let email = req.body.email;
     let password = req.body.password;
 
-    User.findOne(email, password)
+    User.findOne({ email })
       .then((user) => {
         if (!user) {
           res.status(400).send({ status: "FAILED", error: "No user found!" });
