@@ -74,7 +74,7 @@ const userController = {
 
     User.findByCredentials(email, password)
       .then((user, err) => {
-        if (!user.status === "FAILED") {
+        if (user.status === "FAILED") {
           res.status(400).send({ err: user });
         } else {
           Wallet.findOne({ userId: user.id })
