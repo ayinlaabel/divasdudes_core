@@ -165,7 +165,7 @@ userSchema.statics.findByCredentials = function (email, password) {
       });
     })
     .catch((err) => {
-      res.send(err);
+      throw err;
     });
 };
 
