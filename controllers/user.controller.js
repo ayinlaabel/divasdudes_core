@@ -2,6 +2,7 @@ const { response } = require("express");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const request = require("request");
+const bcrypt = require("bcryptjs");
 
 //**IMPORT MODELS */
 const {
