@@ -3,12 +3,11 @@ const _ = require("lodash");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const res = require("express/lib/response");
 
 //JWT secret
 const jwtSecret = "MySecret_Divasdudes";
 
-const userSchema = new mongoose.Schema({
+const userSchema = mongoose.Schema({
   firstName: {
     type: String,
     required: true,

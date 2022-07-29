@@ -16,7 +16,7 @@ const { initializeTransaction, verifyTransaction } =
   require("./payment.controller")(request);
 
 const userController = {
-  registerPost(req, res) {
+  async registerPost(req, res) {
     //register user
 
     let body = req.body;
@@ -69,79 +69,82 @@ const userController = {
       });
   },
 
-  loginPost(req, res) {
+  async loginPost(req, res) {
     let email = req.body.email;
     let password = req.body.password;
 
     User.findOne({ email })
-      .then((user) => {
+      .then(async (user) => {
         if (!user) {
           res.send({ status: "FAILED", error: "No user found!" });
         } else {
-          bcrypt.compare(password, user.password, function (err, isMatch) {
-            if (!isMatch) {
-              res.send({
-                status: "FAILED",
-                error: "Wrong Password, try agian!",
+          const hash = await bcrypt.compare(password, user.password);
+
+          if (!hash) {
+            res.send({
+              status: "FAILED",
+              error: "Wrong Password, try agian!",
+            });
+          } else {
+            Wallet.findOne({ userId: user.id }).then(async (wallet, err) => {
+              if (!wallet) {
+                let newWallet = new Wallet();
+
+                newWallet.userId = user.id;
+
+                newWallet.save();
+              }
+              res.status(200).json({
+                status: "SUCCESS",
+                password: user.sessions,
+                user,
+                token: user.sessions[0].token,
               });
-            } else {
-              Wallet.findOne({ userId: user.id })
-                .then((wallet, err) => {
-                  if (!wallet) {
-                    let newWallet = new Wallet();
+            });
+          }
 
-                    newWallet.userId = user.id;
+          // else {
+          //   Wallet.findOne({ userId: user.id })
+          //     .then((wallet, err) => {
+          //       if (!wallet) {
+          //         let newWallet = new Wallet();
 
-                    newWallet.save();
-                  }
-                  res.status(200).json({ status: "SUCCESS", user });
-                })
-                .catch((err) => console.log(err));
-            }
-          });
+          //         newWallet.userId = user.id;
+
+          //         newWallet.save();
+          //       }
+          //       res.status(200).json({ status: "SUCCESS", user });
+          //     })
+          //     .catch((err) => res.send(err));
+
+          //   //   return user
+          //   //     .createSession()
+          //   //     .then((refreshToken) => {
+          //   //       //Session created successfully - refreshToken returned.
+          //   //       //now we generate an access auth token for the user.
+
+          //   //       return user
+          //   //         .generateAccessAuthToken()
+          //   //         .then((accessToken) => {
+          //   //           //access auth token generated successfully, now we return an object containing  the auth token
+          //   //           return { accessToken, refreshToken };
+          //   //         })
+          //   //         .then((authToken) => {
+          //   //           //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
+
+          //   //           res
+          //   //             .header("x-refresh-token", authToken.refreshToken)
+          //   //             .header("x-access-token", authToken.accessToken)
+          //   //             .send(user);
+          //   //         })
+          //   //         .catch((err) => {
+          //   //           //   res.status(400).json(err);
+          //   //           console.log(err);
+          //   //         });
+          //   //     })
+          //   //     .catch((err) => console.log(err));
+          // }
         }
-
-        // else {
-        //   Wallet.findOne({ userId: user.id })
-        //     .then((wallet, err) => {
-        //       if (!wallet) {
-        //         let newWallet = new Wallet();
-
-        //         newWallet.userId = user.id;
-
-        //         newWallet.save();
-        //       }
-        //       res.status(200).json({ status: "SUCCESS", user });
-        //     })
-        //     .catch((err) => res.send(err));
-
-        //   //   return user
-        //   //     .createSession()
-        //   //     .then((refreshToken) => {
-        //   //       //Session created successfully - refreshToken returned.
-        //   //       //now we generate an access auth token for the user.
-
-        //   //       return user
-        //   //         .generateAccessAuthToken()
-        //   //         .then((accessToken) => {
-        //   //           //access auth token generated successfully, now we return an object containing  the auth token
-        //   //           return { accessToken, refreshToken };
-        //   //         })
-        //   //         .then((authToken) => {
-        //   //           //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
-
-        //   //           res
-        //   //             .header("x-refresh-token", authToken.refreshToken)
-        //   //             .header("x-access-token", authToken.accessToken)
-        //   //             .send(user);
-        //   //         })
-        //   //         .catch((err) => {
-        //   //           //   res.status(400).json(err);
-        //   //           console.log(err);
-        //   //         });
-        //   //     })
-        //   //     .catch((err) => console.log(err));
-        // }
       })
       .catch((err) => {
         console.log({ err });
