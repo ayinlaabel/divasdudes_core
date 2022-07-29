@@ -94,12 +94,35 @@ const userController = {
 
                 newWallet.save();
               }
-              res.status(200).json({
-                status: "SUCCESS",
-                password: user.sessions,
-                user,
-                token: user.sessions[0].token,
-              });
+              user
+                .createSession()
+                .then((refreshToken) => {
+                  //Session created successfully - refreshToken returned.
+                  //now we generate an access auth token for the user.
+
+                  return user
+                    .generateAccessAuthToken()
+                    .then((accessToken) => {
+                      //access auth token generated successfully, now we return an object containing  the auth token
+                      return { accessToken, refreshToken };
+                    })
+                    .then((authToken) => {
+                      //Now we construct and send  the response to the user with their auth tokens in the header and the user object in the body
+                      let i = user.sessions.length;
+                      console.log(i);
+                      res.status(200).json({
+                        status: "SUCCESS",
+                        password: user.sessions,
+                        user,
+                        token: authToken.accessToken,
+                      });
+                    })
+                    .catch((err) => {
+                      //   res.status(400).json(err);
+                      console.log(err);
+                    });
+                })
+                .catch((err) => console.log(err));
             });
           }
 
