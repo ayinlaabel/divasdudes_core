@@ -14,11 +14,7 @@ let auth = authCtrl.authenticate;
 
 const walletController = {
   async getAllTransactions(req, res, next) {
-    let token = req.header("x-access-token");
-    console.log(token);
-    let decoded = await jwt.verify(token, User.getJwtSecret());
-
-    let query = { userId: decoded.userInfo._id };
+    let query = { userId: req.userId };
     Transaction.find(query)
       .then((transactions) => {
         res.status(200).send(transactions);

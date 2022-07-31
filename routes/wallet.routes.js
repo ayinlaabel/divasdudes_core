@@ -6,6 +6,10 @@ const walletCtrl = require("../controllers/wallet.controller");
 const authCtrl = require("../controllers/auth.controller");
 
 router.get("/", authCtrl.verifyToken, walletCtrl.getWallet);
-router.get("/allTransactions", walletCtrl.getAllTransactions);
+router.get(
+  "/allTransactions",
+  authCtrl.verifyToken,
+  walletCtrl.getAllTransactions
+);
 
 module.exports = router;
