@@ -15,6 +15,7 @@ let auth = authCtrl.authenticate;
 const walletController = {
   async getAllTransactions(req, res, next) {
     let token = req.header("x-access-token");
+    console.log(token);
     let decoded = await jwt.verify(token, User.getJwtSecret());
 
     let query = { userId: decoded.userInfo._id };
@@ -29,9 +30,7 @@ const walletController = {
   },
 
   async getWallet(req, res, next) {
-    let token = req.header("x-access-token");
-    let decoded = jwt.verify(token, User.getJwtSecret());
-    let query = { userId: decoded.userInfo._id };
+    let query = { userId: req.userId };
 
     Wallet.findOne(query)
       .then((wallet) => {

@@ -1,13 +1,11 @@
-const express = require('express')
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
 //**IMPORT CONTROLLERS */
-const walletCtrl = require('../controllers/wallet.controller');
-const authCtrl = require('../controllers/auth.controller');
+const walletCtrl = require("../controllers/wallet.controller");
+const authCtrl = require("../controllers/auth.controller");
 
+router.get("/", authCtrl.verifyToken, walletCtrl.getWallet);
+router.get("/allTransactions", walletCtrl.getAllTransactions);
 
-router.get('/', walletCtrl.getWallet);
-router.get('/allTransactions', walletCtrl.getAllTransactions)
-
-
-module.exports = router
+module.exports = router;

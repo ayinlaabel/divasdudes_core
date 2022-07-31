@@ -12,8 +12,8 @@ const {
   PaymentDue,
 } = require("../database/models/index");
 
-const { initializeTransaction, verifyTransaction } =
-  require("./payment.controller")(request);
+// const { initializeTransaction, verifyTransaction } =
+//   require("./payment.controller")(request);
 
 const userController = {
   async registerPost(req, res) {

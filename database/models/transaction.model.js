@@ -21,12 +21,6 @@ const transactionSchema = new mongoose.Schema({
     status:{
         type: String
     },
-    image:{
-        type: String
-    },
-    url:{
-        type: String
-    },
     reference: {
         type: String
     }

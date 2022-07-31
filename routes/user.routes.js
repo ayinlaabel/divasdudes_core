@@ -1,26 +1,29 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-
 //**IMPORT CONTROLLERS */
-const authCtrl = require('../controllers/auth.controller');
-const userCtrl = require('../controllers/user.controller');
+const authCtrl = require("../controllers/auth.controller");
+const userCtrl = require("../controllers/user.controller");
 
 //**IMPORT MODELS */
 // const { User } = require('../database/models/index')
 
-router.get('/', (req, res)=> {
-    res.send();
-}) 
-router.get('/verify', authCtrl.verifySession, authCtrl.refreshToken)
-router.get('/logout', authCtrl.authenticateLogout)
-router.get('/profile', authCtrl.authenticate, userCtrl.getProfile)
-router.get('/paymentDueDate', userCtrl.getDueDate)
+router.get("/", (req, res) => {
+  res.send();
+});
+router.get("/verify", authCtrl.verifySession, authCtrl.refreshToken);
+router.get("/logout", authCtrl.authenticateLogout);
+router.get("/profile", authCtrl.authenticate, userCtrl.getProfile);
+router.get("/paymentDueDate", userCtrl.getDueDate);
 
+router.post("/", userCtrl.registerPost);
+router.post("/login", userCtrl.loginPost);
 
-router.post('/',userCtrl.registerPost) 
-router.post('/login', userCtrl.loginPost)
+router.patch("/updateProfile", authCtrl.authenticate, userCtrl.updateProfile);
 
-router.patch('/updateProfile', authCtrl.authenticate, userCtrl.updateProfile)
+router.get("/test", (req, res, next) => {
+  let today = new Date();
+  res.send({ day: today.getDay() });
+});
 
 module.exports = router;
