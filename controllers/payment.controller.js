@@ -78,6 +78,7 @@ const paymentController = {
   },
   async accountVerification(req, res, next) {
     const details = req.body;
+    console.log(details);
     flw.Misc.verify_Account(details).then((accountDetails) => {
       res.send(accountDetails);
     });
