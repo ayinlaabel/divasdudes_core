@@ -18,7 +18,7 @@ router.post("/payments", paymentCtrl.makePaynment);
 router.post("/bank-transfer", paymentCtrl.bankTransfer);
 
 //Verification Routes here
-router.get("/account-verification", paymentCtrl.accountVerification);
+router.post("/account-verification", paymentCtrl.accountVerification);
 router.get("/bvn", paymentCtrl.bvnVerification);
 
 module.exports = router;
