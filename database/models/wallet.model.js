@@ -9,6 +9,15 @@ const walletSchema = new mongoose.Schema({
     type: String,
     ref: "user",
   },
+  account_name: {
+    type: String,
+  },
+  account_number: {
+    type: String,
+  },
+  bank: {
+    type: String,
+  },
   balance: {
     type: Number,
     default: 0,

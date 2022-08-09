@@ -17,6 +17,11 @@ const payment = {
 
     transaction.save().then((transaction) => res.send(transaction));
   },
+  createDuePayment(req, res, next) {
+    const date = new Date().getDay();
+    if (date === 0) {
+    }
+  },
 };
 
 module.exports = payment;

@@ -7,8 +7,8 @@ const authCtrl = require("../controllers/auth.controller");
 
 //**IMPORT MODELS */
 const { User, Wallet, Transaction } = require("../database/models/index");
-const { initializeTransaction, verifyTransaction } =
-  require("./payment.controller")(request);
+// const { initializeTransaction, verifyTransaction } =
+//   require("./payment.controller")(request);
 
 let auth = authCtrl.authenticate;
 

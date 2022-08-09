@@ -12,4 +12,5 @@ router.get(
   walletCtrl.getAllTransactions
 );
 
+
 module.exports = router;

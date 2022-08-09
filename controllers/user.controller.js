@@ -3,6 +3,11 @@ const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const request = require("request");
 const bcrypt = require("bcryptjs");
+const Flutterwave = require("flutterwave-node-v3");
+const flw = new Flutterwave(
+  process.env.FLW_PUBLIC_KEY,
+  process.env.FLW_SECRET_KEY
+);
 
 //**IMPORT MODELS */
 const {
@@ -12,61 +17,51 @@ const {
   PaymentDue,
 } = require("../database/models/index");
 
+const paymentCtrl = require("./payment.controller");
+
 // const { initializeTransaction, verifyTransaction } =
 //   require("./payment.controller")(request);
 
 const userController = {
   async registerPost(req, res) {
     //register user
-
     let body = req.body;
     let newUser = new User(body);
-    User.findOne({ email: body.email })
-      .then((email) => {
-        if (email) {
-          res.status(400).send({
-            status: "FAILED",
-            error: "This email is already registered.",
-          });
+    User.findOne({ email: body.email }).then(async (email) => {
+      if (email) {
+        res.status(400).send({
+          status: "FAILED",
+          error: "This email is already registered.",
+        });
+      } else {
+        const details = {
+          email: body.email,
+          narative: body.firstName + " " + body.lastName + "/divasdudes",
+          tx_ref: body.email,
+          bvn: body.bvn,
+        };
+        const account = await paymentCtrl.createVisualAccount(details);
+        console.log(account);
+        if (!account) {
+          res.status(500).send({ msg: "Something went wrong1!", account });
         } else {
-          newUser
-            .save()
-            .then((user) => {
-              const userId = user.id;
-              let wallet = new Wallet();
-              wallet.userId = userId;
-              wallet.save();
-              return newUser.createSession();
-            })
-            .then((refreshToken) => {
-              //Session created successfully - refreshToken returned.
-              //now we generate an access auth token for the user.
-
-              return newUser
-                .generateAccessAuthToken()
-                .then((accessToken) => {
-                  //access auth token generated successfully, now we return an object containing  the auth token
-                  return { accessToken, refreshToken };
-                })
-                .then((authToken) => {
-                  //Now we construct and send  the response to the user with their auth tokens in the headerand the user object in the body
-
-                  res
-                    .header("x-refresh-token", authToken.refreshToken)
-                    .header("x-access-token", authToken.accessToken)
-                    .send(newUser);
-                })
-                .catch((err) => {
-                  res
-                    .status(400)
-                    .send({ status: "FAILED", error: "ERROR: err" });
-                });
-            });
+          const user = await newUser.save();
+          let newWallet = new Wallet({
+            userId: user.id,
+            account_name: user.firstName + " " + user.lastName + "/divasdudes",
+            account_number: account.account_number,
+            bank: account.bank_name,
+          });
+          newWallet.save();
+          res.status(201).send({ user, account });
         }
-      })
-      .catch((err) => {
-        console.log("error");
-      });
+        // const userId = user.id;
+        // let wallet = new Wallet();
+        // wallet.userId = userId;
+        // wallet.save();
+        // return newUser.createSession();
+      }
+    });
   },
 
   async loginPost(req, res) {

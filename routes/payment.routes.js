@@ -12,5 +12,13 @@ const { route } = require("./user.routes");
 router.post("/", authCtrl.authenticate, userCtrl.payment);
 router.post("/savings", authCtrl.verifyToken, savingCtrl.transactions);
 router.post("/ref", userCtrl.getRef);
+router.post("/createDuePayment", savingCtrl.createDuePayment);
+router.post("/vac", paymentCtrl.createVisualAccount);
+router.post("/payments", paymentCtrl.makePaynment);
+router.post("/bank-transfer", paymentCtrl.bankTransfer);
+
+//Verification Routes here
+router.get("/account-verification", paymentCtrl.accountVerification);
+router.get("/bvn", paymentCtrl.bvnVerification);
 
 module.exports = router;

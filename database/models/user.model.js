@@ -26,9 +26,6 @@ const userSchema = mongoose.Schema({
   gender: {
     type: String,
   },
-  paymentMethod: {
-    type: String,
-  },
   email: {
     type: String,
     required: true,
